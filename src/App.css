@@ -60,3 +60,7 @@ li{
   display: flex;
   justify-content: space-between;
 }
+
+.css-1umw9bq-MuiSvgIcon-root {
+  color: red;
+}
