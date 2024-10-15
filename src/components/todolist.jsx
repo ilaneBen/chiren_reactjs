@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import '../App.css'; 
 import DeleteConfirmation from './modal/modalConfirmDelete';
+import UpdateGoalModal from './modal/modalUpdateList';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton'; // Importer IconButton
 import 'bootstrap/dist/css/bootstrap.min.css'; // Assure-toi d'importer les styles Bootstrap
+import SettingsIcon from '@mui/icons-material/Settings';
 
 
 const sampleGoalsData = [
@@ -27,6 +29,11 @@ const TodoList = () => {
   // Gestion de la modal
   const [showModal, setShowModal] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState(null);
+  const [showModalUpdate, setShowModalUpdate] = useState(null);
+
+
+  const [goalToUpdate, setGoalToUpdate] = useState(null); // Stocker l'objectif à mettre à jour
+  const [updatedGoal, setUpdatedGoal] = useState(sampleGoals); // État pour le texte mis à jour
 
   // Ouvrir la modal et stocker l'objectif à supprimer
   const openDeleteModal = (id) => {
@@ -63,6 +70,29 @@ const TodoList = () => {
     }
   };
 
+  const openUpdateModal = (goal) => {
+    setGoalToUpdate(goal);
+    setUpdatedGoal(goal.goal);
+    setShowModalUpdate(true);
+    console.log(goal)
+
+  };
+
+  // Fermer la modal
+  const closeModalUpdate = () => {
+    setShowModalUpdate(false);
+    setGoalToUpdate(null);
+  };
+
+  // Fonction pour confirmer et mettre à jour l'objectif
+  const handleUpdateGoal = () => {
+    setSampleGoals(sampleGoals.map(g =>
+      g.id === goalToUpdate.id ? { ...g, goal: updatedGoal } : g
+    ));
+    closeModalUpdate(); // Fermer la modal après la mise à jour
+  };
+
+
   return (
     <>
       <h2>Ajouter à la liste</h2>
@@ -74,13 +104,20 @@ const TodoList = () => {
 
         <ul>
           {sampleGoals.map((goal) => (
-            <li key={goal.id}>
+ <li key={goal.id}>
               {goal.goal}{' '}
               {/* Utiliser IconButton pour rendre l'icône cliquable */}
+              <div className="boutton-modal">
+
               <IconButton onClick={() => openDeleteModal(goal.id)}>
                 <DeleteIcon /> {/* Icône de suppression */}
               </IconButton>
-            </li>
+              <IconButton onClick={() => openUpdateModal(goal)}>
+                <SettingsIcon /> {/* Icône de suppression */}
+              </IconButton>
+            </div>
+              </li>
+          
           ))}
         </ul>
 
@@ -92,6 +129,15 @@ const TodoList = () => {
           id={goalToDelete} // ID de l'élément à supprimer
           message="Êtes-vous sûr de vouloir supprimer cet objectif ?"
         />
+
+        {/* Modal de confirmation */}
+        <UpdateGoalModal
+        showModal={showModalUpdate}
+        hideModal={closeModalUpdate}
+        onConfirm={handleUpdateGoal}
+        updatedGoal={updatedGoal} // Valeur à mettre à jour
+        setUpdatedGoal={setUpdatedGoal} // Fonction pour mettre à jour le texte
+      />
       </div>
     </>
   );
